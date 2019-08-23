@@ -42,9 +42,10 @@ public class NewlogoautoHeaderFragment implements FragmentRequestMapper {
 				request.setFragmentId("newlogoautoHeader");
 				// change to the custom login provided by the module
 				log.info(request.toString());
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 	
 }

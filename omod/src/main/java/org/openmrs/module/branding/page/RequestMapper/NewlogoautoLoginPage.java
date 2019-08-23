@@ -37,8 +37,9 @@ public class NewlogoautoLoginPage implements PageRequestMapper {
 				request.setPageNameOverride("myLogin");
 				
 				log.info(request.toString());
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 }
