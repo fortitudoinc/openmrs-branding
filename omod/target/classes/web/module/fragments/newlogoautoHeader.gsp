@@ -120,7 +120,7 @@
             </a>
         </li>
         <li class="logout">
-            <a href="/${contextPath}/logout">
+            <a href="/${contextPath}/appui/header/logout.action?successUrl=login.htm">
                 ${ui.message("emr.logout")}
                 <i class="icon-signout small"></i>
             </a>

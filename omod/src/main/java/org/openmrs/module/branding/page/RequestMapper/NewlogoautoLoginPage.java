@@ -33,6 +33,7 @@ public class NewlogoautoLoginPage implements PageRequestMapper {
 		if (request.getProviderName().equals("referenceapplication")) {
 			if (request.getPageName().equals("login")) {
 				// change to the custom login provided by the module
+				//System.out.println("NewlogoautoLoginPage - MAPPING LOGIN BRANDING*********");
 				request.setProviderNameOverride("branding");
 				request.setPageNameOverride("myLogin");
 				

@@ -28,6 +28,7 @@ import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.page.PageRequest;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,6 +49,8 @@ public class MyLoginPageController {
 	
 	@RequestMapping("/login.htm")
 	public String overrideLoginpage() {
+		System.out.println("!!!!!!!!!!!!!!!!! overrideLoginpage: " + "forward:/" + ReferenceApplicationConstants.MODULE_ID
+		        + "/login.page");
 		//TODO The referer should actually be captured from here since we are doing a redirect
 		return "forward:/" + ReferenceApplicationConstants.MODULE_ID + "/login.page";
 	}
@@ -83,6 +86,8 @@ public class MyLoginPageController {
 		if (redirectUrl == null)
 			redirectUrl = "";
 		
+		//System.out.println("&&&&&&&&&&&&&&&&&&&&&&  GET LOGIN REDIRECTURL: " + redirectUrl);
+		
 		model.addAttribute(REQUEST_PARAMETER_NAME_REDIRECT_URL, redirectUrl);
 		Location lastSessionLocation = null;
 		try {
@@ -104,7 +109,34 @@ public class MyLoginPageController {
 		return null;
 	}
 	
+	private boolean isUrlWithinOpenmrs(PageRequest pageRequest, String redirectUrl) {
+		//System.out.println("$$$$$$$$$$$$$$$$$$$$isUrlWithinOpenmrs");
+		
+		if (StringUtils.isNotBlank(redirectUrl)) {
+			if (redirectUrl.startsWith("http://") || redirectUrl.startsWith("https://")) {
+				try {
+					URL url = new URL(redirectUrl);
+					String urlPath = url.getFile();
+					String urlContextPath = urlPath.substring(0, urlPath.indexOf('/', 1));
+					//System.out.println("pageRequest.getRequest().getContextPath(): "
+					//        + pageRequest.getRequest().getContextPath() + "   urlContextPath");
+					
+					if (StringUtils.equals(pageRequest.getRequest().getContextPath(), urlContextPath)) {
+						return true;
+					}
+				}
+				catch (MalformedURLException e) {
+					log.error(e.getMessage());
+				}
+			} else if (redirectUrl.startsWith(pageRequest.getRequest().getContextPath())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private String getRedirectUrlFromReferer(PageRequest pageRequest) {
+		//System.out.println("_________________________getRedirectUrlFromReferer");
 		String referer = pageRequest.getRequest().getHeader("Referer");
 		String redirectUrl = "";
 		if (referer != null) {
@@ -125,6 +157,29 @@ public class MyLoginPageController {
 			}
 		}
 		return StringEscapeUtils.escapeHtml(redirectUrl);
+	}
+	
+	private String getRedirectUrlFromRequest(PageRequest pageRequest) {
+		//System.out.println("_________________________getRedirectUrlFromRequest: "
+		//        + pageRequest.getRequest().getParameter(REQUEST_PARAMETER_NAME_REDIRECT_URL));
+		
+		return pageRequest.getRequest().getParameter(REQUEST_PARAMETER_NAME_REDIRECT_URL);
+	}
+	
+	private String getRedirectUrl(PageRequest pageRequest) {
+		//System.out.println("_________________________getRedirectUrl: ");
+		
+		String redirectUrl = getRedirectUrlFromRequest(pageRequest);
+		if (StringUtils.isBlank(redirectUrl)) {
+			redirectUrl = getStringSessionAttribute(SESSION_ATTRIBUTE_REDIRECT_URL, pageRequest.getRequest());
+		}
+		if (StringUtils.isBlank(redirectUrl)) {
+			redirectUrl = getRedirectUrlFromReferer(pageRequest);
+		}
+		if (StringUtils.isNotBlank(redirectUrl) && isUrlWithinOpenmrs(pageRequest, redirectUrl)) {
+			return redirectUrl;
+		}
+		return "";
 	}
 	
 	/**
@@ -151,6 +206,8 @@ public class MyLoginPageController {
 		
 		String redirectUrl = pageRequest.getRequest().getParameter(REQUEST_PARAMETER_NAME_REDIRECT_URL);
 		redirectUrl = getRelativeUrl(redirectUrl, pageRequest);
+		
+		//System.out.println("^^^^^^^^^^^^^^^^^^ LOGIN REDIRECTURL: " + redirectUrl);
 		Location sessionLocation = null;
 		if (sessionLocationId != null) {
 			try {
@@ -233,7 +290,13 @@ public class MyLoginPageController {
 	}
 	
 	private String getStringSessionAttribute(String attributeName, HttpServletRequest request) {
-		System.out.println("***getStringSessionAttribute: " + attributeName + "  request: " + request);
+		if (StringUtils.isBlank(attributeName)) {
+			return "";
+		}
+		
+		if (request.getSession().getAttribute(attributeName) == null) {
+			return "";
+		}
 		String attributeValue = request.getSession().getAttribute(attributeName).toString();
 		request.getSession().removeAttribute(attributeName);
 		return attributeValue;
@@ -246,9 +309,14 @@ public class MyLoginPageController {
 		if (url.startsWith("/") || (!url.startsWith("http://") && !url.startsWith("https://"))) {
 			return url;
 		}
+		//System.out.println("*************** getRelativeUrl, URL: " + url + "  ContextPath: "
+		//        + pageRequest.getRequest().getContextPath());
 		
 		//This is an absolute url, discard the protocal, domain name/host and port section
-		int indexOfContextPath = url.indexOf(pageRequest.getRequest().getContextPath());
+		//int indexOfContextPath = url.indexOf(pageRequest.getRequest().getContextPath());
+		int indexOfContextPath = url.lastIndexOf(pageRequest.getRequest().getContextPath());
+		
+		//System.out.println("*************** getRelativeUrl, indexOfContextPath: " + indexOfContextPath);
 		if (indexOfContextPath >= 0) {
 			url = url.substring(indexOfContextPath);
 			log.debug("Relative redirect:" + url);

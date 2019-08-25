@@ -1,11 +1,14 @@
 package org.openmrs.module.branding.fragment.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appframework.domain.Extension;
 import org.openmrs.module.appframework.service.AppFrameworkService;
+import org.openmrs.module.appui.AppUiConstants;
 import org.openmrs.module.appui.AppUiExtensions;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.FragmentModel;
@@ -39,4 +42,24 @@ public class NewlogoautoHeaderFragmentController {
 			Context.removeProxyPrivilege(VIEW_LOCATIONS);
 		}
 	}
+	
+	public Extension getLowestOrderExtenstion(List<Extension> exts) {
+		Extension lowestOrderExtension = exts.size() > 0 ? exts.get(0) : null;
+		for (Extension ext : exts) {
+			if (lowestOrderExtension.getOrder() > ext.getOrder()) {
+				lowestOrderExtension = ext;
+			}
+		}
+		return lowestOrderExtension;
+	}
+	
+	public void logout(HttpServletRequest request) throws IOException {
+		//System.out.println("logout*******************************");
+		Context.logout();
+		//System.out.println("logout - AFTER CONTEXT.LOGOUT*******************************");
+		
+		request.getSession().invalidate();
+		request.getSession().setAttribute(AppUiConstants.SESSION_ATTRIBUTE_MANUAL_LOGOUT, "true");
+	}
+	
 }
