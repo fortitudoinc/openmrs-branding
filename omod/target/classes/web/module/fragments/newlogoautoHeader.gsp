@@ -90,7 +90,10 @@
 
 <header>
 <div class="logo">
-<img src="${ ui.resourceLink("branding", "images/Logo3.png") }" style="max-width: 50px; max-height: 50px;">
+        <a href="${ui.pageLink("referenceapplication", "home")}">
+            <img src="${ ui.resourceLink("branding", "images/Logo3.png") }" style="max-width: 50px; max-height: 50px;">
+        </a>
+
 </div>
     <% if (context.authenticated) { %>
     <ul class="user-options">
