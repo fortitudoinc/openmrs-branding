@@ -84,7 +84,7 @@
         jq('.identifier').css('cursor', 'pointer');
         <% } %>
         <% } %>
-        var str = "<%= ui.resourceLink('/logo/') %>" + "logo3.jpg";
+        var str = "<%= ui.resourceLink('/logo/') %>" + "openmrslogo.jpg";
         document.getElementById("brandingImage").src = str;
     });
 

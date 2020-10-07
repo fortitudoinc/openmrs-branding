@@ -54,7 +54,7 @@ ${ ui.includeFragment("referenceapplication", "infoAndErrorMessages") }
             cannotLoginController.show();
         });
         pageReady = true;
-        var str = "<%= ui.resourceLink('/logo/') %>" + "logo3.jpg";
+        var str = "<%= ui.resourceLink('/logo/') %>" + "openmrslogo.jpg";
         document.getElementById("brandingImage").src = str;
     });
 </script>

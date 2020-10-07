@@ -1,0 +1,25 @@
+
+[
+    {
+        "id": "${project.parent.artifactId}.appbranding",
+        "description": "Text description of my app, not shown to regular user",
+        "extensionPoints": [
+            {
+                "id": "subApp.appsbranding",
+                "description": "Apps on the basic Apps App Home Page"
+            }
+        ],
+        "extensions": [
+            {
+                "id": "${project.parent.artifactId}.branding",
+                "extensionPointId": "org.openmrs.referenceapplication.homepageLink",
+                "type": "link",
+                "label": "Upload Branding File",
+                "url": "branding/uploadBrandingFile.page",
+                "icon": "icon-search",
+                "requiredPrivilege": "App: branding"
+            }                      
+        ]
+    }
+]
+
