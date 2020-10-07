@@ -54,13 +54,15 @@ ${ ui.includeFragment("referenceapplication", "infoAndErrorMessages") }
             cannotLoginController.show();
         });
         pageReady = true;
+        var str = "<%= ui.resourceLink('/logo/') %>" + "logo3.jpg";
+        document.getElementById("brandingImage").src = str;
     });
 </script>
 
 <header>
     <div class="logo">
         <a href="${ui.pageLink("referenceapplication", "home")}">
-<img src="${ ui.resourceLink("branding", "images/Logo3.png") }" style="max-width: 50px; max-height: 50px;">
+<img id="brandingImage" style="max-width: 400px; max-height: 140px;">
 
         </a>
     </div>
